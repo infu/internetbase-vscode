@@ -1,0 +1,6 @@
+**/*.ts
+**/tsconfig.json
+!file.ts
+views/explorer/src
+views/explorer/node_modules
+node_modules
