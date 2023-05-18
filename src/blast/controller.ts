@@ -204,10 +204,10 @@ async({
       const rawStr = JSON.stringify(output, undefined, "  ");
 
       execution.replaceOutput([
-        new vscode.NotebookCellOutput([
-          // vscode.NotebookCellOutputItem.json(output),
-          vscode.NotebookCellOutputItem.text(rawStr, "text/x-json"),
-        ]),
+        new vscode.NotebookCellOutput(
+          output.map((x) => vscode.NotebookCellOutputItem.json(x))
+          // vscode.NotebookCellOutputItem.text(rawStr, "text/x-json"),
+        ),
       ]);
 
       execution.end(true, Date.now());
