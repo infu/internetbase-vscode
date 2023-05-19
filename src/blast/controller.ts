@@ -21,7 +21,10 @@ import { Principal } from "@dfinity/principal";
 
 import { BlastAuthenticationProvider } from "../auth/authProvider";
 
-// import { AccountIdentifier, SubAccount } from "@dfinity/nns";
+import { AccountIdentifier, SubAccount } from "../lib/account_identifier";
+import { encodeIcrcAccount, decodeIcrcAccount } from "@dfinity/ledger";
+
+import util from "util";
 
 export class SampleKernel {
   private readonly _id = "blast-notebook-serializer-kernel";
@@ -33,6 +36,7 @@ export class SampleKernel {
   public ic = null;
   public identity: Ed25519KeyIdentity | null = null;
   public globalObj = {};
+  public console = vscode.window.createOutputChannel("Blast");
 
   constructor() {
     this._controller = vscode.notebooks.createNotebookController(
@@ -95,7 +99,7 @@ export class SampleKernel {
 			DelegationIdentity,
 			Principal,
 			AccountIdentifier,
-			SubAccount
+			SubAccount,encodeIcrcAccount, decodeIcrcAccount
 		}) => {
 			const {${Object.keys(this.globalObj).join(",")}} = globalObj;
 			try {
@@ -125,6 +129,7 @@ async({
 	icblast,
 	identity,
 	ic,
+  me,
 	global,
 	globalObj,
 	toState,
@@ -138,7 +143,7 @@ async({
 	DelegationIdentity,
 	Principal,
 	AccountIdentifier,
-	SubAccount
+	SubAccount, encodeIcrcAccount, decodeIcrcAccount
 }) => {
 	const {${Object.keys(this.globalObj).join(",")}} = globalObj;
 	try {
@@ -159,6 +164,17 @@ async({
 
     const logged: any[] = [];
     const log = (msg: any) => {
+      this.console.appendLine(
+        util.inspect(bigIntToString(msg), {
+          showHidden: false,
+          depth: null,
+          colors: false,
+          compact: true,
+          numericSeparator: true,
+          breakLength: 80,
+          maxArrayLength: 100,
+        })
+      );
       logged.push(toState(msg));
     };
 
@@ -170,6 +186,7 @@ async({
       icblast,
       identity: this.identity,
       ic: this.ic,
+      me: this.identity?.getPrincipal(),
       global,
       globalObj: this.globalObj,
       toState,
@@ -182,8 +199,10 @@ async({
       DelegationChain,
       DelegationIdentity,
       Principal,
-      // AccountIdentifier,
-      // SubAccount,
+      AccountIdentifier,
+      SubAccount,
+      encodeIcrcAccount,
+      decodeIcrcAccount,
     };
     // console.log(params);
 
@@ -205,7 +224,10 @@ async({
 
       execution.replaceOutput([
         new vscode.NotebookCellOutput(
-          output.map((x) => vscode.NotebookCellOutputItem.json(x))
+          [vscode.NotebookCellOutputItem.text(rawStr, "text/x-json")]
+          // [vscode.NotebookCellOutputItem.json(output)]
+
+          // output.map((x) => vscode.NotebookCellOutputItem.json(x))
           // vscode.NotebookCellOutputItem.text(rawStr, "text/x-json"),
         ),
       ]);
@@ -225,3 +247,30 @@ async({
     }
   }
 }
+
+export const bigIntToString = (x: any): any => {
+  if (x === undefined || x === null) return x;
+  if (typeof x === "bigint") return x.toString() + "n";
+  if (x instanceof Uint8Array) return x;
+  if (x instanceof Uint16Array) return x;
+  if (x instanceof Int16Array) return x;
+  if (x instanceof Uint32Array) return x;
+  if (x instanceof Int32Array) return x;
+  if (x instanceof BigInt64Array)
+    return Array.from(x, (bigInt) => bigInt.toString() + "n");
+  if (x instanceof BigUint64Array)
+    return Array.from(x, (bigInt) => bigInt.toString() + "n");
+
+  if (Array.isArray(x)) {
+    return x.map((y) => bigIntToString(y));
+  }
+
+  if (typeof x === "object") {
+    return Object.fromEntries(
+      Object.keys(x).map((k) => {
+        return [k, bigIntToString(x[k])];
+      })
+    );
+  }
+  return x;
+};

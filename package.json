@@ -97,10 +97,13 @@
     "@dfinity/auth-client": "*",
     "@dfinity/candid": "*",
     "@dfinity/identity": "*",
+    "@dfinity/ledger": "^0.0.7",
     "@dfinity/nns": "*",
     "@dfinity/principal": "*",
     "@infu/icblast": "^2.0.29",
+    "buffer": "^6.0.3",
     "get-random-values": "^2.1.0",
-    "js-sha256": "^0.9.0"
+    "js-sha256": "^0.9.0",
+    "util": "^0.12.5"
   }
 }
