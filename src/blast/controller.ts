@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 // import "window-crypto";
-// import "isomorphic-fetch";
+import "isomorphic-fetch";
 
 import icblast, {
   toState,

@@ -100,7 +100,7 @@
     "@dfinity/ledger": "^0.0.7",
     "@dfinity/nns": "*",
     "@dfinity/principal": "*",
-    "@infu/icblast": "^2.0.31",
+    "@infu/icblast": "^2.0.39",
     "buffer": "^6.0.3",
     "get-random-values": "^2.1.0",
     "js-sha256": "^0.9.0",
