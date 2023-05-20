@@ -2,7 +2,7 @@
   "name": "internet-base",
   "displayName": "Internet Base",
   "description": "Internet Computer Tools",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "publisher": "internetbase",
   "private": true,
   "license": "MIT",
