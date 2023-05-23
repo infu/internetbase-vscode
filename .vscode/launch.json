@@ -17,7 +17,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/web/**/*.js"
 			],
-			"preLaunchTask": "npm: watch-web"
+			"preLaunchTask": "npm: watch-web",
 		},
 		{
 			"name": "Extension Tests in VS Code",
@@ -34,5 +34,6 @@
 			],
 			"preLaunchTask": "npm: watch-web"
 		}
-	]
+	],
+	
 }
