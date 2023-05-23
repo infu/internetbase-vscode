@@ -75,7 +75,9 @@ export class SampleKernel {
     }
   }
 
-  private async run(code: string): Promise<any[]> {
+  private async run(cell: vscode.NotebookCell): Promise<any[]> {
+    const code = cell.document.getText();
+
     if (this.ic === null) {
       await this.setupBlast();
     }
@@ -123,6 +125,33 @@ export class SampleKernel {
 		const mod = await eval('import("' + dataUri + '")');
 */
 
+    const localPath = (path: string) => {
+      const curpath = cell.document.uri.path;
+      const dir = curpath.substring(0, curpath.lastIndexOf("/") + 1);
+      const root = vscode.Uri.file(dir);
+      return vscode.Uri.joinPath(root, path);
+    };
+
+    const readDir = (p: string) =>
+      vscode.workspace.fs.readDirectory(localPath(p));
+
+    const readFile = (p: string) => vscode.workspace.fs.readFile(localPath(p));
+
+    const readFileText = async (p: string) => {
+      const blob = await vscode.workspace.fs.readFile(localPath(p));
+      return new TextDecoder().decode(blob);
+    };
+
+    const writeFile = (p: string, blob: Uint8Array) =>
+      vscode.workspace.fs.writeFile(localPath(p), blob);
+
+    const writeFileText = async (p: string, content: string) => {
+      return vscode.workspace.fs.writeFile(
+        localPath(p),
+        new TextEncoder().encode(content)
+      );
+    };
+
     const rcode = `
 		
 async({
@@ -143,7 +172,12 @@ async({
 	DelegationIdentity,
 	Principal,
 	AccountIdentifier,
-	SubAccount, encodeIcrcAccount, decodeIcrcAccount
+	SubAccount, encodeIcrcAccount, decodeIcrcAccount, 
+  readDir,
+    readFile,
+    readFileText,
+    writeFile,
+    writeFileText,
 }) => {
 	const {${Object.keys(this.globalObj).join(",")}} = globalObj;
 	try {
@@ -203,6 +237,11 @@ async({
       SubAccount,
       encodeIcrcAccount,
       decodeIcrcAccount,
+      readDir,
+      readFile,
+      readFileText,
+      writeFile,
+      writeFileText,
     };
     // console.log(params);
 
@@ -218,7 +257,7 @@ async({
     execution.start(Date.now());
 
     try {
-      const output = await this.run(cell.document.getText());
+      const output = await this.run(cell);
 
       const rawStr = JSON.stringify(output, undefined, "  ");
 
