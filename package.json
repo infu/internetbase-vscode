@@ -1,7 +1,7 @@
 {
   "name": "internet-base",
   "displayName": "Internet Base",
-  "description": "Internet Computer Tools",
+  "description": "Internet Computer IDE",
   "version": "0.16.0",
   "publisher": "internetbase",
   "private": true,

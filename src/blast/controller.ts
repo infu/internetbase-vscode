@@ -28,7 +28,7 @@ import util from "util";
 
 export class SampleKernel {
   private readonly _id = "blast-notebook-serializer-kernel";
-  private readonly _label = "Blast JS Kernel";
+  private readonly _label = "Blast Web Kernel";
   private readonly _supportedLanguages = ["javascript"]; // "shellscript"
 
   private _executionOrder = 0;
