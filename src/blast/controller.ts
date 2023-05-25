@@ -11,7 +11,7 @@ import icblast, {
 } from "@infu/icblast";
 
 import { CanisterStatus } from "@dfinity/agent";
-
+import { runbash } from "./bash";
 import {
   Ed25519KeyIdentity,
   DelegationChain,
@@ -29,7 +29,7 @@ import util from "util";
 export class SampleKernel {
   private readonly _id = "blast-notebook-serializer-kernel";
   private readonly _label = "Blast JS Kernel";
-  private readonly _supportedLanguages = ["javascript"];
+  private readonly _supportedLanguages = ["javascript"]; // "shellscript"
 
   private _executionOrder = 0;
   private readonly _controller: vscode.NotebookController;
@@ -76,6 +76,18 @@ export class SampleKernel {
   }
 
   private async run(cell: vscode.NotebookCell): Promise<any[]> {
+    if (cell.document.languageId === "javascript") {
+      return this.runjs(cell);
+    } else {
+      return this.runbash(cell);
+    }
+  }
+
+  private async runbash(cell: vscode.NotebookCell): Promise<any[]> {
+    return runbash(cell.document.getText());
+  }
+
+  private async runjs(cell: vscode.NotebookCell): Promise<any[]> {
     const code = cell.document.getText();
 
     if (this.ic === null) {
@@ -126,10 +138,7 @@ export class SampleKernel {
 */
 
     const localPath = (path: string) => {
-      const curpath = cell.document.uri.path;
-      const dir = curpath.substring(0, curpath.lastIndexOf("/") + 1);
-      const root = vscode.Uri.file(dir);
-      return vscode.Uri.joinPath(root, path);
+      return vscode.Uri.joinPath(cell.document.uri, "..", path);
     };
 
     const readDir = (p: string) =>
