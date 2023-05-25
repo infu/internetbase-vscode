@@ -138,7 +138,12 @@ export class SampleKernel {
 */
 
     const localPath = (path: string) => {
-      return vscode.Uri.joinPath(cell.document.uri, "..", path);
+      const curpath = cell.document.uri.path;
+      const dir = curpath.substring(0, curpath.lastIndexOf("/") + 1);
+      const root = vscode.Uri.file(dir);
+      return vscode.Uri.joinPath(root, path);
+      // return vscode.Uri.joinPath(cell.document.uri, "..", path);
+      // return vscode.Uri.joinPath(cell.document.uri, "..", path);
     };
 
     const readDir = (p: string) =>
